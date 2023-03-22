@@ -2,39 +2,33 @@ package com.bbco.practice.web.domain.user.service;
 
 import com.bbco.practice.web.domain.user.dto.User;
 import com.bbco.practice.web.domain.user.dto.params.InsertParam;
-import com.bbco.practice.web.domain.user.dto.params.SelectParam;
+import com.bbco.practice.web.domain.user.dto.params.UpdateParam;
+import com.bbco.practice.web.storage.UserStorage;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-    private static long userSeq = 0;
-    private final static List<User> userList = new LinkedList<>();
+    private final UserStorage storage;
 
-    public User insertUser(InsertParam param) throws Exception {
-
-        User newUser = new User();
-        newUser.setUser(param, userSeq++);
-        userList.add(newUser);
-
-        return newUser;
+    public User insert(InsertParam param) throws Exception {
+        return storage.insert(param);
     }
 
-    public User selectOneUser(String userId) {
-        Optional<User> userOptional = userList.stream().filter(user -> user.getUserId().equals(userId)).findFirst();
+    public User select(String userId) throws IllegalArgumentException {
+        return storage.select(userId);
+    }
 
-        if (userOptional.isPresent()) {
-            return userOptional.get();
-        } else {
-            throw new IllegalArgumentException();
-        }
+    public User update(String userId, UpdateParam param) throws Exception {
+        return storage.update(userId, param);
+    }
+
+    public User delete(String userId) {
+        return storage.delete(userId);
     }
 
 }
