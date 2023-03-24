@@ -18,6 +18,11 @@ public class TokenProvider {
     private String separator = "/";
 
     public String createStr(LoginParam param) {
+
+        if (!storage.validation(param.getAdminId(), param.getAdminPassword())){
+            throw new IllegalArgumentException();
+        }
+
         StringBuilder builder = new StringBuilder();
         builder.append(System.currentTimeMillis());// 토큰이 만들어진 시간
         builder.append(separator);
