@@ -1,4 +1,4 @@
-package com.bbco.practice.web.storage;
+package com.bbco.practice.web.storage.user;
 
 import com.bbco.practice.web.domain.user.dto.User;
 import com.bbco.practice.web.domain.user.dto.params.InsertParam;

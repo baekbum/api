@@ -1,18 +1,18 @@
-package com.bbco.practice.web.storage;
+package com.bbco.practice.web.storage.user;
 
 import com.bbco.practice.web.domain.user.dto.User;
 import com.bbco.practice.web.domain.user.dto.params.InsertParam;
 import com.bbco.practice.web.domain.user.dto.params.UpdateParam;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@Component
-public class UserStorageImpl implements UserStorage{
+@Repository
+public class UserStorageImpl implements UserStorage {
 
     private static long userSeq = 1;
 
