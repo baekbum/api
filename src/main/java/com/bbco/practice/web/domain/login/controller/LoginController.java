@@ -37,13 +37,4 @@ public class LoginController {
             throw new RuntimeException("서버 오류입니다.");
         }
     }
-
-//    @GetMapping("/login/{token}")
-//    public void valid(@PathVariable("token") String token) {
-//        if (loginService.validateToken(token)) {
-//            log.info("토큰 검증 성공");
-//        } else {
-//            log.info("토큰 검증 실패");
-//        }
-//    }
 }

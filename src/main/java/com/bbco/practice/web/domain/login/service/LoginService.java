@@ -23,7 +23,7 @@ public class LoginService {
         return token;
     }
 
-//    public Boolean validateToken(String token) {
-//        return tokenProvider.validateToken(token);
-//    }
+    public Boolean validateToken(String token) {
+        return tokenProvider.validateToken(token);
+    }
 }
