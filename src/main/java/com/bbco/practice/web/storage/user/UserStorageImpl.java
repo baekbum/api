@@ -20,17 +20,24 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public User insert(InsertParam param) {
-        User user = new User();
-        user.insert(param, userSeq++);
-        userList.add(user);
+        Optional<User> userOptional = isExistUserId(param.getUserId());
 
-        return user;
+        if (userOptional.isPresent()) {
+            log.info("[{}]는 이미 존재하는 ID 입니다.", param.getUserId());
+            throw new IllegalArgumentException();
+        } else {
+            User user = new User();
+            user.insert(param, userSeq++);
+            userList.add(user);
+
+            return user;
+        }
     }
 
     @Override
     public User select(String userId) {
 
-        Optional<User> userOptional = userList.stream().filter(user -> user.getUserId().equals(userId)).findFirst();
+        Optional<User> userOptional = isExistUserId(userId);
 
         if (userOptional.isPresent()) {
             return userOptional.get();
@@ -42,7 +49,7 @@ public class UserStorageImpl implements UserStorage {
     @Override
     public User update(String userId, UpdateParam param) {
 
-        Optional<User> userOptional = userList.stream().filter(user -> user.getUserId().equals(userId)).findFirst();
+        Optional<User> userOptional = isExistUserId(userId);
 
         if (userOptional.isPresent()) {
 
@@ -58,7 +65,7 @@ public class UserStorageImpl implements UserStorage {
     @Override
     public User delete(String userId) {
 
-        Optional<User> userOptional = userList.stream().filter(user -> user.getUserId().equals(userId)).findFirst();
+        Optional<User> userOptional = isExistUserId(userId);
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -68,5 +75,15 @@ public class UserStorageImpl implements UserStorage {
         } else {
             throw new IllegalArgumentException();
         }
+    }
+
+    private Optional<User> isExistUserId(String userId) {
+        // userId로 검색한 결과를 반환
+        return  userList.stream().filter(user -> user.getUserId().equals(userId)).findFirst();
+    }
+
+    public void initStorage() {
+        userSeq = 1L;
+        userList = new LinkedList<>();
     }
 }

@@ -27,6 +27,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         if (isNotValid(authToken)) {
             log.info("[WARN] 토큰이 유효하지 않습니다.");
+            response.sendError(400);
             return false;
         }
 
@@ -50,7 +51,9 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        log.info("[ex] : {}, ex");
+        if (ex != null) {
+            log.info("[ex] : {}", ex);
+        }
     }
 
     private Boolean isNotValid(String authToken) {
