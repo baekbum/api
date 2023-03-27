@@ -22,62 +22,34 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/user/info")
-    public ResponseEntity<ResponseUserForm> insertUser(@Valid @RequestBody InsertParam param) {
-        try {
-            User userInfo = userService.insert(param);
+    public ResponseEntity<ResponseUserForm> insertUser(@Valid @RequestBody InsertParam param) throws Exception {
+        User userInfo = userService.insert(param);
+        ResponseUserForm resForm = new ResponseUserForm(userInfo, "등록되었습니다.");
 
-            ResponseUserForm resForm = new ResponseUserForm(userInfo, "등록되었습니다.");
-
-            return new ResponseEntity<>(resForm, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("잘못된 정보입니다.");
-        } catch (Exception e) {
-            throw new RuntimeException("서버 오류입니다.");
-        }
+        return new ResponseEntity<>(resForm, HttpStatus.OK);
     }
 
     @GetMapping("/user/info/{userId}")
-    public ResponseEntity<ResponseUserForm> selectUser(@PathVariable("userId") String userId) {
-        try {
-            User user = userService.select(userId);
+    public ResponseEntity<ResponseUserForm> selectUser(@PathVariable("userId") String userId) throws Exception {
+        User user = userService.select(userId);
+        ResponseUserForm resForm = new ResponseUserForm(user, "조회되었습니다.");
 
-            ResponseUserForm resForm = new ResponseUserForm(user, "조회되었습니다.");
-
-            return new ResponseEntity<>(resForm, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("잘못된 정보입니다.");
-        } catch (Exception e) {
-            throw new RuntimeException("서버 오류입니다.");
-        }
+        return new ResponseEntity<>(resForm, HttpStatus.OK);
     }
 
     @PutMapping("/user/info/{userId}")
-    public ResponseEntity updateUser(@PathVariable("userId") String userId, @RequestBody UpdateParam param) {
-        try {
-            User userInfo = userService.update(userId, param);
+    public ResponseEntity updateUser(@PathVariable("userId") String userId, @RequestBody UpdateParam param) throws Exception {
+        User userInfo = userService.update(userId, param);
+        ResponseUserForm resForm = new ResponseUserForm(userInfo, "수정되었습니다.");
 
-            ResponseUserForm resForm = new ResponseUserForm(userInfo, "수정되었습니다.");
-
-            return new ResponseEntity<>(resForm, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("잘못된 정보입니다.");
-        } catch (Exception e) {
-            throw new RuntimeException("서버 오류입니다.");
-        }
+        return new ResponseEntity<>(resForm, HttpStatus.OK);
     }
 
     @DeleteMapping("/user/info/{userId}")
-    public ResponseEntity deleteUser(@PathVariable("userId") String userId) {
-        try {
-            User userInfo = userService.delete(userId);
+    public ResponseEntity deleteUser(@PathVariable("userId") String userId) throws Exception {
+        User userInfo = userService.delete(userId);
+        ResponseUserForm resForm = new ResponseUserForm(userInfo, "삭제되었습니다.");
 
-            ResponseUserForm resForm = new ResponseUserForm(userInfo, "삭제되었습니다.");
-
-            return new ResponseEntity<>(resForm, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("잘못된 정보입니다.");
-        } catch (Exception e) {
-            throw new RuntimeException("서버 오류입니다.");
-        }
+        return new ResponseEntity<>(resForm, HttpStatus.OK);
     }
 }

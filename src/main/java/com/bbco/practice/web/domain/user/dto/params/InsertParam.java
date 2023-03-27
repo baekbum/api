@@ -13,10 +13,16 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 public class InsertParam {
 
-    @NotEmpty(message = "유저 ID는 필수 값입니다.")
-    private String userId;
-    @NotEmpty(message = "유저 이름은 필수 값입니다.")
-    private String userName;
-    private String grade;
-    private String address;
+    @NotEmpty(message = "유저 ID는 필수 값 입니다.")
+    private String id;
+    @NotEmpty(message = "유저 PW는 필수 값 입니다.")
+    private String password;
+    @NotEmpty(message = "유저 이름은 필수 값 입니다.")
+    private String name;
+    private String rank;
+    private String tel;
+
+    private String city;
+    private String street;
+    private String zipcode;
 }

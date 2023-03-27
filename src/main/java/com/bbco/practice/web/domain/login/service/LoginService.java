@@ -12,11 +12,9 @@ public class LoginService {
 
     private final TokenProvider tokenProvider;
 
-    @Trace
     public String createToken(LoginParam param) throws Exception {
         // 암호화 될 문자열 생성
         String str = tokenProvider.createStr(param);
-
         // 토큰 생성
         String token = tokenProvider.createToken(str);
 

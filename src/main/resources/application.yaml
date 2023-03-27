@@ -9,3 +9,13 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: qwe123
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+#      show-sql: true
+      format_sql: true
+
+logging:
+  level:
+    org.hibernate.SQL: debug

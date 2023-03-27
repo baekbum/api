@@ -21,6 +21,9 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String reqId = UUID.randomUUID().toString();
+        log.info("[UUID] -> : [{}]", reqId);
+
         log.info("[REQUEST URI] : [{}]", request.getRequestURI());
 
         String authToken = request.getHeader("B-AUTH-TOKEN");
@@ -31,11 +34,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        String reqId = UUID.randomUUID().toString();
-
         request.setAttribute("reqId", reqId);
-
-        log.info("[UUID] -> : [{}]", reqId);
 
         return true;
     }

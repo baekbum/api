@@ -12,14 +12,14 @@ public class ExControllerAdvice {
 
     @ExceptionHandler
     public ResponseEntity<ErrorResult> badRequest(IllegalArgumentException e) {
-        log.info("[badRequest] : [{}]", e.toString());
+        log.info("[badRequest] : [{}]", e.getMessage());
         ErrorResult errorResult = new ErrorResult("bad parameter", e.getMessage());
         return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResult> serverError(Exception e) {
-        log.info("[serverError] : [{}]", e.toString());
+    public ResponseEntity<ErrorResult> serverError(RuntimeException e) {
+        log.info("[serverError] : [{}]", e.getMessage());
         ErrorResult errorResult = new ErrorResult("server error", e.getMessage());
         return new ResponseEntity<>(errorResult, HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -5,13 +5,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateParam {
 
-    private String userName;
-    private String grade;
-    private String address;
+    private String password;
+    private String name;
+    private String rank;
+    private String tel;
+
+    private String city;
+    private String street;
+    private String zipcode;
 }

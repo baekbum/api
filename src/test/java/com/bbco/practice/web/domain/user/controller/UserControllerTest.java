@@ -1,11 +1,12 @@
 package com.bbco.practice.web.domain.user.controller;
 
+import com.bbco.practice.web.domain.admin.dto.Admin;
+import com.bbco.practice.web.domain.admin.service.AdminService;
 import com.bbco.practice.web.domain.login.dto.params.LoginParam;
 import com.bbco.practice.web.domain.login.dto.resForm.ResponseLoginForm;
 import com.bbco.practice.web.domain.user.dto.params.InsertParam;
 import com.bbco.practice.web.domain.user.dto.params.UpdateParam;
 import com.bbco.practice.web.domain.user.dto.resForm.ResponseUserForm;
-import com.bbco.practice.web.storage.user.UserStorageImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,14 +16,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.Charset;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -32,12 +35,31 @@ class UserControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private UserStorageImpl storage;
+    private AdminService adminService;
 
     ObjectMapper objectMapper = new ObjectMapper();
     ResponseLoginForm form;
     InsertParam userInfo;
 
+    @BeforeEach
+    @Transactional
+    void insertAdmin() {
+
+        Admin admin = new Admin();
+        admin.setId("admin");
+        admin.setPassword("qwe123");
+        admin.setName("관리자");
+
+        adminService.insert(admin);
+    }
+
+    @AfterEach
+    @Transactional
+    void deleteAdmin() {
+        adminService.delete("admin", "qwe123");
+    }
+
+    // 토큰 생성
     @BeforeEach
     void getToken() throws Exception {
         LoginParam param = LoginParam.builder()
@@ -57,35 +79,26 @@ class UserControllerTest {
         form = objectMapper.readValue(json, ResponseLoginForm.class);
     }
 
+    // 초기 유저 정보
     @BeforeEach
-    void setUserInfo() throws Exception {
+    void setUserInfo() {
         userInfo = InsertParam.builder()
-                .userId("holics")
-                .userName("홀릭스")
-                .grade("V")
-                .address("서울시 동작구")
+                .id("holics")
+                .password("qwe123")
+                .name("홀릭스")
+                .rank("Staff")
+                .tel("010-1111-1111")
+                .city("서울시")
+                .street("사당동")
+                .zipcode("00735")
                 .build();
-    }
-
-    @AfterEach
-    void initStorage() throws Exception {
-        storage.initStorage();
-    }
-
-    @Test
-    @DisplayName("[실패] 사용자 등록 ( 토큰 없음 )")
-    void insertUserFail1() throws Exception {
-        mockMvc.perform(
-                MockMvcRequestBuilders
-                        .post("/api/v1/user/info")
-                        .content(objectMapper.writeValueAsString(userInfo))
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
 
     @Test
     @DisplayName("[성공] 사용자 등록")
-    void insertUserSucc1() throws Exception {
+    @Transactional
+    @Rollback
+    void insertUserSucc() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders
                         .post("/api/v1/user/info")
@@ -96,8 +109,10 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("[실패] 사용자 등록 ( 동일한 사용자 등록 )")
-    void insertUserFail2() throws Exception {
+    @DisplayName("[실패] 사용자 등록 (동일한 사용자 등록)")
+    @Transactional
+    @Rollback
+    void insertUserFail() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders
                         .post("/api/v1/user/info")
@@ -117,6 +132,8 @@ class UserControllerTest {
 
     @Test
     @DisplayName("[성공] 사용자 조회")
+    @Transactional
+    @Rollback
     void selectUserSucc() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders
@@ -128,18 +145,18 @@ class UserControllerTest {
 
         mockMvc.perform(
                 MockMvcRequestBuilders
-                        .get("/api/v1/user/info/" + userInfo.getUserId())
+                        .get("/api/v1/user/info/holics")
                         .header("B-AUTH-TOKEN", form.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    @DisplayName("[실패] 사용자 조회 ( 등록되지 않은 사용자 )")
+    @DisplayName("[실패] 사용자 조회")
     void selectUserFail() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders
-                        .get("/api/v1/user/info/" + userInfo.getUserId())
+                        .get("/api/v1/user/info/none")
                         .header("B-AUTH-TOKEN", form.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.status().is4xxClientError());
@@ -147,6 +164,8 @@ class UserControllerTest {
 
     @Test
     @DisplayName("[성공] 사용자 수정")
+    @Transactional
+    @Rollback
     void updateUserSucc() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders
@@ -157,12 +176,12 @@ class UserControllerTest {
         );
 
         UpdateParam updateUserInfo = UpdateParam.builder()
-                .userName("수정된 홀릭스")
+                .name("수정된 홀릭스")
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(
                 MockMvcRequestBuilders
-                        .put("/api/v1/user/info/" + userInfo.getUserId())
+                        .put("/api/v1/user/info/" + userInfo.getId())
                         .header("B-AUTH-TOKEN", form.getToken())
                         .content(objectMapper.writeValueAsString(updateUserInfo))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -172,7 +191,7 @@ class UserControllerTest {
 
         ResponseUserForm userForm = objectMapper.readValue(json, ResponseUserForm.class);
 
-        assertThat(updateUserInfo.getUserName().equals(userForm.getData().getUserName()));
+        assertThat(updateUserInfo.getName()).isEqualTo(userForm.getData().getName());
     }
 
     @Test
@@ -188,7 +207,7 @@ class UserControllerTest {
 
         mockMvc.perform(
                 MockMvcRequestBuilders
-                        .delete("/api/v1/user/info/" + userInfo.getUserId())
+                        .delete("/api/v1/user/info/" + userInfo.getId())
                         .header("B-AUTH-TOKEN", form.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.status().isOk());

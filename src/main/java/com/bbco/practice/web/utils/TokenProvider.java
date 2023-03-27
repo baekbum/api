@@ -1,7 +1,8 @@
 package com.bbco.practice.web.utils;
 
+import com.bbco.practice.web.domain.admin.dto.Admin;
+import com.bbco.practice.web.domain.admin.service.AdminService;
 import com.bbco.practice.web.domain.login.dto.params.LoginParam;
-import com.bbco.practice.web.storage.admin.AdminStorage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TokenProvider {
 
-    private final AdminStorage storage;
+    private final AdminService service;
 
     // 토큰 유효 시간 10분
     private long tokenValidTime = 10 * 60 * 1000L;
@@ -19,8 +20,10 @@ public class TokenProvider {
 
     public String createStr(LoginParam param) {
 
-        if (!storage.validation(param.getAdminId(), param.getAdminPassword())){
-            throw new IllegalArgumentException();
+        Admin findAdmin = service.select(param.getAdminId(), param.getAdminPassword());
+
+        if (findAdmin == null) {
+            throw new RuntimeException("관리자 정보가 올바르지 않습니다.");
         }
 
         StringBuilder builder = new StringBuilder();
@@ -45,7 +48,7 @@ public class TokenProvider {
             return encrypt;
         } catch (Exception e) {
             log.info("[토큰 인코딩 오류]");
-            throw new RuntimeException("내부 오류");
+            throw new RuntimeException("토큰 암호화 실패");
         }
     }
 
@@ -60,35 +63,31 @@ public class TokenProvider {
             return decrypt;
         } catch (Exception e) {
             log.info("[토큰 디코딩 오류]");
-            throw new RuntimeException("내부 오류");
+            throw new RuntimeException("토큰 복호화 실패");
         }
     }
 
     // 검증
     public Boolean validateToken(String str) {
-        try {
-            String token = getToken(str);
+        String token = getToken(str);
 
-            String[] splitToken = token.split(separator);
+        String[] splitToken = token.split(separator);
 
-            String time = splitToken[0];
-            String id = splitToken[1];
-            String pass = splitToken[2];
+        String time = splitToken[0];
+        String id = splitToken[1];
+        String pass = splitToken[2];
 
-            log.info("[time][id][pass] : [{}][{}][{}]", time, id, pass);
+        log.info("[time][id][pass] : [{}][{}][{}]", time, id, pass);
 
-            Long compareTime = System.currentTimeMillis() - Long.parseLong(time);
-            log.info("[tokenValidTime] : {}", tokenValidTime);
-            log.info("[compareTime] : {} ms", compareTime);
+        Long compareTime = System.currentTimeMillis() - Long.parseLong(time);
+        log.info("[tokenValidTime] : {}", tokenValidTime);
+        log.info("[compareTime] : {} ms", compareTime);
 
-            if (tokenValidTime <= compareTime) {
-                log.info("토큰 유효 기간 만료");
-                return false;
-            }
-
-            return storage.validation(id, pass);
-        } catch (Exception e) {
-            throw new RuntimeException("토큰 오류");
+        if (tokenValidTime <= compareTime) {
+            log.info("토큰 유효 기간 만료");
+            return false;
         }
+
+        return (service.select(id, pass) != null) ? true : false;
     }
 }

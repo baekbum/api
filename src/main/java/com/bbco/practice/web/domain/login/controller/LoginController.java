@@ -21,20 +21,16 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseLoginForm> login(@RequestBody LoginParam param, HttpServletResponse response) {
-        try {
-            String token = loginService.createToken(param);
+    public ResponseEntity<ResponseLoginForm> login(@RequestBody LoginParam param, HttpServletResponse response) throws Exception {
+        log.info("[--토큰 생성 로직 시작--]");
 
-            ResponseLoginForm resForm = new ResponseLoginForm(token,"토큰 생성 완료");
+        String token = loginService.createToken(param);
 
-            Cookie tokenCookie = new Cookie("B-AUTH-TOKEN", token);
-            response.addCookie(tokenCookie);
+        ResponseLoginForm resForm = new ResponseLoginForm(token,"토큰 생성 완료");
 
-            return new ResponseEntity<>(resForm, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("인증이 실패했습니다.");
-        } catch (Exception e) {
-            throw new RuntimeException("서버 오류입니다.");
-        }
+        Cookie tokenCookie = new Cookie("B-AUTH-TOKEN", token);
+        response.addCookie(tokenCookie);
+        log.info("[--토큰 생성 로직 종료--]");
+        return new ResponseEntity<>(resForm, HttpStatus.OK);
     }
 }
