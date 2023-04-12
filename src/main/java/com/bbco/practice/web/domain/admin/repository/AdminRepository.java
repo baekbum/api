@@ -1,16 +1,15 @@
 package com.bbco.practice.web.domain.admin.repository;
 
-import com.bbco.practice.web.domain.admin.dto.Admin;
-import org.springframework.stereotype.Repository;
+import com.bbco.practice.web.domain.admin.entity.Admin;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-@Repository
-public interface AdminRepository {
+import java.util.Optional;
 
-    void save(Admin admin);
+public interface AdminRepository extends JpaRepository<Admin, Long> {
 
-    Admin find(String id, String password);
+    Optional<Admin> findByAdminIdAndPassword(String adminId, String password);
 
-    void update(Admin admin);
-
-    void delete(Admin admin);
+    Long countByAdminIdAndPassword(String adminId, String password);
 }

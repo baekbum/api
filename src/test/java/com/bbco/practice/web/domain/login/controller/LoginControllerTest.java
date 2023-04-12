@@ -1,58 +1,84 @@
 package com.bbco.practice.web.domain.login.controller;
 
+import com.bbco.practice.web.domain.admin.dto.AdminInsertParam;
+import com.bbco.practice.web.domain.admin.entity.Admin;
+import com.bbco.practice.web.domain.admin.service.AdminService;
 import com.bbco.practice.web.domain.login.dto.params.LoginParam;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
-@AutoConfigureMockMvc
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SpringBootTest
+@Transactional
+@Rollback
 class LoginControllerTest {
 
+    @PersistenceContext
+    EntityManager em;
+
     @Autowired
-    private MockMvc mockMvc;
+    AdminService service;
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    private final String DEFAULT_ADMIN_ID = "admin";
+    private final String DEFAULT_ADMIN_PASSWORD = "qwe123";
+    private final String DEFAULT_ADMIN_NAME = "관리자";
 
-    @Test
-    @DisplayName("[성공] 토큰 발급")
-    void getTokenSucc() throws Exception {
 
-        LoginParam param = LoginParam.builder()
-                .adminId("admin")
-                .adminPassword("qwe123")
-                .build();
-
-        mockMvc.perform(
-                MockMvcRequestBuilders
-                        .post("/api/v1/login")
-                        .content(objectMapper.writeValueAsString(param))
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(MockMvcResultMatchers.status().isOk());
+    @BeforeEach
+    void init() throws Exception {
+        AdminInsertParam newAdminParam = new AdminInsertParam(DEFAULT_ADMIN_ID, DEFAULT_ADMIN_PASSWORD, DEFAULT_ADMIN_NAME);
+        service.save(newAdminParam);
     }
 
+    /**
+     * 관리자 등록 테스트
+     * @throws Exception
+     */
     @Test
-    @DisplayName("[실패] 토큰 발급")
-    void getTokenFail() throws Exception {
+    void save() throws Exception {
+        // given
+        AdminInsertParam newAdminParam = new AdminInsertParam("bb", "qwe123", "범범");
 
-        LoginParam param = LoginParam.builder()
-                .adminId("admin")
-                .adminPassword("123qwe")
-                .build();
+        // when
+        service.save(newAdminParam);
 
-        mockMvc.perform(
-                MockMvcRequestBuilders
-                        .post("/api/v1/login")
-                        .content(objectMapper.writeValueAsString(param))
-                        .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(MockMvcResultMatchers.status().is4xxClientError());
+        // then
+        LoginParam param = new LoginParam(newAdminParam.getId(), newAdminParam.getPassword());
+        Admin findAdmin = service.findOne(param);
+
+        assertThat(findAdmin.getAdminId()).isEqualTo(newAdminParam.getId());
+    }
+
+    /**
+     * 관리자 조회 테스트
+     * @throws Exception
+     */
+    @Test
+    void findOne() throws Exception {
+        // then
+        Admin findAdmin = service.findOne(new LoginParam(DEFAULT_ADMIN_ID, DEFAULT_ADMIN_PASSWORD));
+
+        assertThat(findAdmin.getAdminId()).isEqualTo(DEFAULT_ADMIN_ID);
+    }
+
+    /**
+     * 존재하는지 여부 확인
+     * @throws Exception
+     */
+    @Test
+    void isExist() throws Exception {
+        // then
+        Boolean exist = service.isExist(DEFAULT_ADMIN_ID, DEFAULT_ADMIN_PASSWORD);
+
+        assertThat(exist).isTrue();
     }
 
 }
