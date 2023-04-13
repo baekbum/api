@@ -1,8 +1,8 @@
-package com.bbco.practice.web.domain.login.controller;
+package com.bbco.practice.web.domain.token.controller;
 
-import com.bbco.practice.web.domain.login.dto.params.LoginParam;
-import com.bbco.practice.web.domain.login.dto.resForm.ResponseLoginForm;
-import com.bbco.practice.web.domain.login.service.LoginService;
+import com.bbco.practice.web.domain.token.dto.params.TokenParam;
+import com.bbco.practice.web.domain.token.dto.resForm.ResponseTokenForm;
+import com.bbco.practice.web.domain.token.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,9 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/api/v1")
 @RestController
 @RequiredArgsConstructor
-public class LoginController {
+public class TokenController {
 
-    private final LoginService loginService;
+    private final TokenService tokenService;
 
     /**
      * 관리자 검증을 통해 토큰을 생성한다.
@@ -28,12 +28,12 @@ public class LoginController {
      * @throws Exception
      */
     @PostMapping("/login")
-    public ResponseEntity<ResponseLoginForm> login(@RequestBody LoginParam param, HttpServletResponse response) throws Exception {
+    public ResponseEntity<ResponseTokenForm> login(@RequestBody TokenParam param, HttpServletResponse response) throws Exception {
         log.info("[--토큰 생성 로직 시작--]");
 
-        String token = loginService.createToken(param);
+        String token = tokenService.createToken(param);
 
-        ResponseLoginForm resForm = new ResponseLoginForm(token,"토큰 생성 완료");
+        ResponseTokenForm resForm = new ResponseTokenForm(token,"토큰 생성 완료");
 
         Cookie tokenCookie = new Cookie("B-AUTH-TOKEN", token);
         response.addCookie(tokenCookie);

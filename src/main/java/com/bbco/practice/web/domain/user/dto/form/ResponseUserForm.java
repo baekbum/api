@@ -1,5 +1,6 @@
-package com.bbco.practice.web.domain.login.dto.resForm;
+package com.bbco.practice.web.domain.user.dto.form;
 
+import com.bbco.practice.web.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,9 +8,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseLoginForm {
+public class ResponseUserForm {
 
-    private String token;
+    private User data;
     private String msg;
 
 }

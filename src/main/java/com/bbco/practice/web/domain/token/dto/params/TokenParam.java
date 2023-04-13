@@ -1,4 +1,4 @@
-package com.bbco.practice.web.domain.login.dto.params;
+package com.bbco.practice.web.domain.token.dto.params;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginParam {
+public class TokenParam {
     private String id;
     private String password;
 }

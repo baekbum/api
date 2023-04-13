@@ -1,4 +1,4 @@
-package com.bbco.practice.web.domain.user.dto;
+package com.bbco.practice.web.domain.user.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

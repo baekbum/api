@@ -8,5 +8,15 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AdminSearchCond {
     private String id;
+    private String password;
     private String name;
+
+    public AdminSearchCond(String id) {
+        this.id = id;
+    }
+
+    public AdminSearchCond(String id, String password) {
+        this.id = id;
+        this.password = password;
+    }
 }

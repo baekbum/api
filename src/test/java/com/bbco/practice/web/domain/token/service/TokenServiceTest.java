@@ -1,9 +1,8 @@
-package com.bbco.practice.web.domain.login.service;
+package com.bbco.practice.web.domain.token.service;
 
 import com.bbco.practice.web.domain.admin.dto.params.AdminInsertParam;
 import com.bbco.practice.web.domain.admin.service.AdminService;
-import com.bbco.practice.web.domain.login.dto.params.LoginParam;
-import com.bbco.practice.web.utils.TokenProvider;
+import com.bbco.practice.web.domain.token.dto.params.TokenParam;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,10 +16,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Transactional
 @Rollback
-class LoginServiceTest {
+class TokenServiceTest {
 
     @Autowired
-    LoginService loginService;
+    TokenService tokenService;
 
     @Autowired
     AdminService adminService;
@@ -44,7 +43,7 @@ class LoginServiceTest {
     @DisplayName("토큰 생성 로직")
     void createToken() throws Exception {
         // given && when
-        String token = loginService.createToken(new LoginParam(DEFAULT_ADMIN_ID, DEFAULT_ADMIN_PASSWORD));
+        String token = tokenService.createToken(new TokenParam(DEFAULT_ADMIN_ID, DEFAULT_ADMIN_PASSWORD));
 
         // then
         assertThat(token).isNotEmpty();
@@ -54,10 +53,10 @@ class LoginServiceTest {
     @DisplayName("토큰 검증 성공")
     void adminInfoFail() throws Exception {
         // given
-        String token = loginService.createToken(new LoginParam(DEFAULT_ADMIN_ID, DEFAULT_ADMIN_PASSWORD));
+        String token = tokenService.createToken(new TokenParam(DEFAULT_ADMIN_ID, DEFAULT_ADMIN_PASSWORD));
 
         // when
-        Boolean isValid = loginService.validateToken(token);
+        Boolean isValid = tokenService.validateToken(token);
 
         // then
         assertThat(isValid).isTrue();
@@ -72,7 +71,7 @@ class LoginServiceTest {
         String token = "j+bZwuXes3sO3jrXGiD5dP6EyQ1M0QbMfoyCNAGFApQ=";
 
         // when
-        Boolean isValid = loginService.validateToken(token);
+        Boolean isValid = tokenService.validateToken(token);
 
         // then
         assertThat(isValid).isFalse();

@@ -11,14 +11,18 @@ import javax.validation.constraints.NotEmpty;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateParam {
+public class UserInsertParam {
 
+    @NotEmpty(message = "유저 ID는 필수 값 입니다.")
+    private String id;
+    @NotEmpty(message = "유저 PW는 필수 값 입니다.")
     private String password;
+    @NotEmpty(message = "유저 이름은 필수 값 입니다.")
     private String name;
-    private String rank;
+    private Long rankId;
     private String tel;
-
     private String city;
     private String street;
     private String zipcode;
+    //private String team; // 추후에 팀 엔티티로 교체
 }

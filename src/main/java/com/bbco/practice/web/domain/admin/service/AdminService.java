@@ -37,12 +37,12 @@ public class AdminService {
      */
     public Admin save(AdminInsertParam param) {
 
-        if (isExist(param.getId(), null)) {
+        if (isExist(new AdminSearchCond(param.getId()))) {
             log.info(isExist);
             return null;
         }
 
-        Admin newAdmin = new Admin(param.getId(), param.getPassword(), param.getName());
+        Admin newAdmin = new Admin(param);
 
         repository.save(newAdmin);
 
@@ -62,14 +62,12 @@ public class AdminService {
 
     /**
      * 관리자 한 건 조회 로직
-     * 관리자 유효성 검증 및 일치하면 관리자 정보 반환
-     * @param id
+     * @param adminId
      * @return
      */
     @Transactional(readOnly = true)
-    public Admin findById(String id) {
-
-        Optional<Admin> findAdmin = repository.findByAdminId(id);
+    public Admin findById(String adminId) {
+        Optional<Admin> findAdmin = repository.findByAdminId(adminId);
 
         if (findAdmin.isEmpty()) {
             log.info(isNotExist);
@@ -81,14 +79,13 @@ public class AdminService {
     }
 
     /**
-     * 조건(id, password)에 일치하는 정보가 있는 확인 로직
-     * @param id
-     * @param password
+     * 조건에 일치하는 정보가 있는 확인 로직
+     * @param cond
      * @return
      */
     @Transactional(readOnly = true)
-    public Boolean isExist(String id, String password) {
-        Long cnt = dslRepository.findCountByCondition(id, password);
+    public Boolean isExist(AdminSearchCond cond) {
+        Long cnt = dslRepository.findCountByCondition(cond);
 
         return (cnt > 0) ? true : false;
     }
