@@ -20,6 +20,13 @@ public class LoginController {
 
     private final LoginService loginService;
 
+    /**
+     * 관리자 검증을 통해 토큰을 생성한다.
+     * @param param
+     * @param response
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/login")
     public ResponseEntity<ResponseLoginForm> login(@RequestBody LoginParam param, HttpServletResponse response) throws Exception {
         log.info("[--토큰 생성 로직 시작--]");

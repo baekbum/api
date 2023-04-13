@@ -49,7 +49,6 @@ public class TokenProvider {
      * @param str -> 현재시간/ID/PASSWORD
      * @return
      */
-
     public String createToken(String str) {
         try {
             AES256 aes256 = new AES256();

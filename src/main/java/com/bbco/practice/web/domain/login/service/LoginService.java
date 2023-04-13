@@ -1,6 +1,5 @@
 package com.bbco.practice.web.domain.login.service;
 
-import com.bbco.practice.web.common.annotation.Trace;
 import com.bbco.practice.web.domain.login.dto.params.LoginParam;
 import com.bbco.practice.web.utils.TokenProvider;
 import lombok.RequiredArgsConstructor;
