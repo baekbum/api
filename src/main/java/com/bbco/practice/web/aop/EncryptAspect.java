@@ -21,7 +21,6 @@ public class EncryptAspect {
 
     @Around("com.bbco.practice.web.aop.pointcut.AnnotationPointcut.runTimeEncrypt()")
     public Object doEncrypt(ProceedingJoinPoint joinPoint) throws Throwable {
-        String encryptPassword = "";
         try {
             Object[] args = joinPoint.getArgs();
 
@@ -54,7 +53,6 @@ public class EncryptAspect {
 
                 if (o instanceof UserUpdateParam) {
                     UserUpdateParam param = (UserUpdateParam) o;
-
                     if (isNotEmpty(param.getPassword())) {
                         param.setPassword(encryptString(param.getPassword()));
                     }
@@ -71,9 +69,8 @@ public class EncryptAspect {
 
             return joinPoint.proceed();
 
-        } catch (Exception e) {
-            log.info("패스워드 해쉬화 실패");
-            throw new RuntimeException("패스워드 해쉬화 실패");
+        } finally {
+
         }
     }
 

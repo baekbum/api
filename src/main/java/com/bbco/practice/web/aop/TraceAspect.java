@@ -16,13 +16,15 @@ public class TraceAspect {
         long startTime = System.currentTimeMillis();
 
         try {
-            log.info("[실행 메서드 정보] : {}", joinPoint.getSignature());
+            log.info("-----------------------------------------------------------------------------");
+            log.info("[Trace][실행 메서드 정보] : {}", joinPoint.getSignature());
 
             return joinPoint.proceed();
         } finally {
             long endTime = System.currentTimeMillis();
 
-            log.info("[소요 시간] : {} ms", endTime - startTime);
+            log.info("[Trace][소요 시간] : {} ms", endTime - startTime);
+            log.info("-----------------------------------------------------------------------------");
         }
     }
 }

@@ -36,4 +36,12 @@ public class UserRank {
         this.name = name;
     }
 
+    public void changeId(Long id) {
+        this.id = id;
+    }
+
+    public void changeName(String name) {
+        this.name = name;
+    }
+
 }

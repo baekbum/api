@@ -136,7 +136,6 @@ class AdminServiceTest {
         service.save(adminInsertParam);
 
         // when
-        Admin findAdmin = service.findById("bb");
         service.update("bb", new AdminUpdateParam(null, "밤밤"));
 
         // then

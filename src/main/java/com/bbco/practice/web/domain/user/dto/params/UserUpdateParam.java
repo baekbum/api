@@ -15,7 +15,7 @@ public class UserUpdateParam {
 
     private String password;
     private String name;
-    private Long rank;
+    private Long rankId;
     private String tel;
 
     private String city;

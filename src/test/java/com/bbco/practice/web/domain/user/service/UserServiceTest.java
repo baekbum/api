@@ -3,6 +3,8 @@ package com.bbco.practice.web.domain.user.service;
 import com.bbco.practice.web.domain.user.dto.UserDto;
 import com.bbco.practice.web.domain.user.dto.params.UserInsertParam;
 import com.bbco.practice.web.domain.user.dto.params.UserSearchCond;
+import com.bbco.practice.web.domain.user.dto.params.UserUpdateParam;
+import com.bbco.practice.web.domain.user.entity.User;
 import com.bbco.practice.web.domain.user.entity.UserRank;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-@Rollback
+@Rollback(value = false)
 class UserServiceTest {
 
     @PersistenceContext
@@ -50,7 +52,7 @@ class UserServiceTest {
         em.clear();
 
         UserInsertParam insertParam = new UserInsertParam(DEFAULT_USER_ID, DEFAULT_USER_PASSWORD, DEFAULT_USER_NAME, DEFAULT_USER_RANK, "010-7777-7777", "서울시", "xx로", "87873");
-        UserDto result = userService.save(insertParam);
+        userService.save(insertParam);
     }
 
     @Test
@@ -60,7 +62,7 @@ class UserServiceTest {
         UserInsertParam insertParam = new UserInsertParam("user2", "qwe123", "유저2", 2L, "010-8888-8888", "서울시", "xx로", "87873");
 
         // when
-        UserDto result = userService.save(insertParam);
+        User result = userService.save(insertParam);
 
         // then
         assertThat(insertParam.getId()).isEqualTo(result.getId());
@@ -70,7 +72,7 @@ class UserServiceTest {
     @DisplayName("유저 한건 조회")
     void findOne() throws Exception {
         // given && when
-        UserDto findUser = userService.findById(DEFAULT_USER_ID);
+        User findUser = userService.findById(DEFAULT_USER_ID);
 
         // then
         assertThat(findUser.getName()).isEqualTo(DEFAULT_USER_NAME);
@@ -81,7 +83,7 @@ class UserServiceTest {
     void findByCond() throws Exception {
         // given
         UserInsertParam insertParam = new UserInsertParam("user2", "qwe123", "유저2", 2L, "010-8888-8888", "서울시", "xx로", "87873");
-        UserDto result = userService.save(insertParam);
+        User result = userService.save(insertParam);
 
         UserSearchCond cond = new UserSearchCond(new UserInsertParam(null, null, "유저", null, null, null, null, null));
         // when
@@ -89,6 +91,40 @@ class UserServiceTest {
 
         // then
         assertThat(findUsers.size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("유저 수정")
+    void update() throws Exception {
+        // given
+        UserInsertParam insertParam = new UserInsertParam("user2", "qwe123", "유저2", 2L, "010-8888-8888", "서울시", "xx로", "87873");
+        userService.save(insertParam);
+
+        String changeName = "수정된 유저";
+        // when
+        userService.update("user2", new UserUpdateParam(null, changeName, 3L, null, null, null, null));
+
+        // then
+        User findUser = userService.findById("user2");
+
+        assertThat(findUser.getName()).isEqualTo(changeName);
+    }
+
+    @Test
+    @DisplayName("유저 삭제")
+    void delete() throws Exception {
+        // given
+        String userId = "user2";
+        UserInsertParam insertParam = new UserInsertParam(userId, "qwe123", "유저2", 2L, "010-8888-8888", "서울시", "xx로", "87873");
+        userService.save(insertParam);
+
+        // when
+        userService.delete(userId);
+
+        // then
+        Boolean isExist = userService.isExist(new UserSearchCond(userId));
+
+        assertThat(isExist).isFalse();
     }
 
 }

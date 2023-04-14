@@ -2,10 +2,11 @@ package com.bbco.practice.web.domain.user.entity;
 
 import com.bbco.practice.web.common.entity.BaseTimeEntity;
 import com.bbco.practice.web.domain.user.dto.params.UserInsertParam;
+import com.bbco.practice.web.domain.user.dto.params.UserUpdateParam;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 
@@ -38,26 +39,16 @@ public class User extends BaseTimeEntity {
         this.address = new Address(param.getCity(), param.getStreet(), param.getZipcode());
     }
 
+    public void update(UserUpdateParam param) {
+        if (StringUtils.hasText(param.getPassword())) password = param.getPassword();
+        if (StringUtils.hasText(param.getName())) name = param.getName();
+        if (StringUtils.hasText(param.getTel())) tel = param.getTel();
+        if (StringUtils.hasText(param.getStreet())) address.setStreet(param.getStreet());
+        if (StringUtils.hasText(param.getCity())) address.setCity(param.getCity());
+        if (StringUtils.hasText(param.getZipcode())) address.setZipcode(param.getZipcode());
+    }
+
     public void setRank(UserRank rank) {
         this.rank = rank;
     }
-
-    //    public void insert(InsertParam param) {
-//        id = param.getId();
-//        password = param.getPassword();
-//        name = param.getName();
-//        rank = StringUtils.hasText(param.getRank()) ? UserRank.valueOf(param.getRank()) : UserRank.Staff;
-//        tel = param.getTel();
-//        address = new Address(param.getCity(), param.getStreet(), param.getZipcode());
-//    }
-//
-//    public void update(UpdateParam param) {
-//        if (StringUtils.hasText(param.getPassword())) password = param.getPassword();
-//        if (StringUtils.hasText(param.getName())) name = param.getName();
-//        if (StringUtils.hasText(param.getRank())) rank = UserRank.valueOf(param.getRank());
-//        if (StringUtils.hasText(param.getTel())) tel = param.getTel();
-//        if (StringUtils.hasText(param.getStreet())) address.setStreet(param.getStreet());
-//        if (StringUtils.hasText(param.getCity())) address.setCity(param.getCity());
-//        if (StringUtils.hasText(param.getZipcode())) address.setZipcode(param.getZipcode());
-//    }
 }

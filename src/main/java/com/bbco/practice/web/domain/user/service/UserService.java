@@ -5,6 +5,7 @@ import com.bbco.practice.web.common.annotation.Trace;
 import com.bbco.practice.web.domain.user.dto.UserDto;
 import com.bbco.practice.web.domain.user.dto.params.UserInsertParam;
 import com.bbco.practice.web.domain.user.dto.params.UserSearchCond;
+import com.bbco.practice.web.domain.user.dto.params.UserUpdateParam;
 import com.bbco.practice.web.domain.user.entity.User;
 import com.bbco.practice.web.domain.user.entity.UserRank;
 import com.bbco.practice.web.domain.user.repository.UserQueryDslRepository;
@@ -14,9 +15,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -41,59 +44,67 @@ public class UserService {
      */
     @Encrypt
     @Trace
-    public UserDto save(UserInsertParam param) {
+    public User save(UserInsertParam param) {
 
-        if (isExist(new UserSearchCond(param.getId()))) {
-            log.info(isExist);
-            return null;
-        }
+        if (isExist(new UserSearchCond(param.getId()))) throw new IllegalArgumentException(isExist);
 
         Long rankId = (param.getRankId() == null) ? 1L : param.getRankId();
-        Optional<UserRank> findRank = getRank(rankId);
+        UserRank findRank = getRank(rankId);
 
-        if (findRank.isEmpty()) {
-            log.info(isNotRank);
-            return null;
-        }
         User user = new User(param);
-        user.setRank(findRank.get());
+        user.setRank(findRank);
 
         userRepository.save(user);
 
-        log.info("[등록된 유저 ID] : {}", user.getUserId());
+        log.info("[등록된 사용자 ID] : {}", user.getUserId());
 
-        return new UserDto(user);
+        return user;
     }
 
-    /**
-     * 사용자 조건 조회
-     * @param cond
-     * @return
-     */
     @Encrypt
+    @Trace
     @Transactional(readOnly = true)
     public List<UserDto> findUserByCondition(UserSearchCond cond) {
         return dslRepository.findUserByCondition(cond);
     }
 
-    /**
-     * 사용자 한 건 조회
-     * @param userId
-     * @return
-     */
+    @Trace
     @Transactional(readOnly = true)
-    public UserDto findById(String userId) {
-        Optional<User> findUser = userRepository.findByUserId(userId);
+    public User findById(String userId) {
+        User findUser = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException(isNotExist));
 
-        if (findUser.isEmpty()) {
-            log.info(isNotExist);
-            return null;
+        log.info("[조회된 사용자 ID] : {}", findUser.getUserId());
+        return findUser;
+    }
+
+    @Trace
+    @Encrypt
+    public User update(String id, UserUpdateParam param) {
+        User findUser = userRepository.findByUserId(id)
+                .orElseThrow(() -> new IllegalArgumentException(isNotExist));
+
+        findUser.update(param);
+
+        if (param.getRankId() != null) {
+            UserRank findRank = getRank(param.getRankId());
+            findUser.setRank(findRank);
         }
 
-        findUser.get();
+        log.info("[수정된 사용자 ID] : {}", findUser.getUserId());
 
-        log.info("[조회된 사용자 ID] : {}", findUser.get().getUserId());
-        return new UserDto(findUser.get());
+        return findUser;
+    }
+
+    @Trace
+    public User delete(String id) {
+        User findUser = userRepository.findByUserId(id)
+                .orElseThrow(() -> new IllegalArgumentException(isNotExist));
+
+        userRepository.delete(findUser);
+
+        log.info("[삭제된 사용자 ID] : {}", findUser.getUserId());
+        return findUser;
     }
 
     /**
@@ -101,7 +112,6 @@ public class UserService {
      * @param cond
      * @return
      */
-    @Encrypt
     @Transactional(readOnly = true)
     public Boolean isExist(UserSearchCond cond) {
         Long cnt = dslRepository.findCountByCondition(cond);
@@ -109,76 +119,13 @@ public class UserService {
         return (cnt > 0) ? true : false;
     }
 
-    private Optional<UserRank> getRank(Long id) {
-        Optional<UserRank> findRank = rankRepository.findById(id);
-
-        return findRank;
+    /**
+     * 조건에 맞는 UserRank 엔티티를 조회해온다.
+     * @param id
+     * @return
+     */
+    private UserRank getRank(Long id) {
+        return rankRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(isNotRank));
     }
-
-//    @Trace
-//    @Transactional
-//    public User save(UserInsertParam param) {
-//        // 파라미터로 들어온 유저 ID가 존재하는지 확인
-//        User findUser = repository.find(param.getId());
-//        if (findUser != null) throw new IllegalArgumentException(isExist);
-//
-//        // 파라미터로 들어온 유저 ID가 존재하지 않을 때 등록 로직 수행
-//        User user = new User();
-//        user.insert(param);
-//
-//        repository.save(user);
-//        log.info("[등록된 유저 ID] : {}", user.getId());
-//        return user;
-//    }
-
-//    /**
-//     * 조건(id, password)에 일치하는 정보가 있는 확인 로직
-//     * @param id
-//     * @param password
-//     * @return
-//     */
-//    @Transactional(readOnly = true)
-//    public Boolean isExist(String id, String password) {
-//        Long cnt = dslRepository.findCountByCondition(id, password);
-//
-//        return (cnt > 0) ? true : false;
-//    }
-
-//    @Trace
-//    public User select(String userId) {
-//
-//        User findUser = repository.find(userId);
-//        if (findUser == null) throw new IllegalArgumentException(isNotExist);
-//
-//        log.info("[조회된 유저 ID] : {}", findUser.getId());
-//        return findUser;
-//    }
-//
-//    @Trace
-//    @Transactional
-//    public User update(String userId, UpdateParam param) {
-//        // 파라미터로 들어온 유저 ID가 존재하는지 확인
-//        User findUser = repository.find(userId);w
-//        if (findUser == null) throw new IllegalArgumentException(isNotExist);
-//
-//        log.info("[수정할 유저 ID] : {}", findUser.getId());
-//        findUser.update(param);
-//
-//        repository.update(findUser);
-//
-//        return findUser;
-//    }
-//
-//    @Trace
-//    @Transactional
-//    public User delete(String userId) {
-//        // 파라미터로 들어온 유저 ID가 존재하는지 확인
-//        User findUser = repository.find(userId);
-//        if (findUser == null) throw new IllegalArgumentException(isNotExist);
-//
-//        log.info("[삭제할 유저 ID] : {}", findUser.getId());
-//        repository.delete(findUser);
-//
-//        return findUser;
-//    }
 }
