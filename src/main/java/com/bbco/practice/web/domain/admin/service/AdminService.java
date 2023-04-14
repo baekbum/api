@@ -1,5 +1,6 @@
 package com.bbco.practice.web.domain.admin.service;
 
+import com.bbco.practice.web.common.annotation.Encrypt;
 import com.bbco.practice.web.domain.admin.dto.AdminDto;
 import com.bbco.practice.web.domain.admin.dto.params.AdminInsertParam;
 import com.bbco.practice.web.domain.admin.dto.params.AdminSearchCond;
@@ -35,6 +36,7 @@ public class AdminService {
      * @param param
      * @return
      */
+    @Encrypt
     public Admin save(AdminInsertParam param) {
 
         if (isExist(new AdminSearchCond(param.getId()))) {
@@ -55,6 +57,7 @@ public class AdminService {
      * @param cond
      * @return
      */
+    @Encrypt
     @Transactional(readOnly = true)
     public List<Admin> findAdminByCondition(AdminSearchCond cond) {
         return dslRepository.findAdminByCondition(cond);
@@ -83,6 +86,7 @@ public class AdminService {
      * @param cond
      * @return
      */
+    @Encrypt
     @Transactional(readOnly = true)
     public Boolean isExist(AdminSearchCond cond) {
         Long cnt = dslRepository.findCountByCondition(cond);
@@ -90,7 +94,7 @@ public class AdminService {
         return (cnt > 0) ? true : false;
     }
 
-
+    @Encrypt
     public Admin update(String id, AdminUpdateParam param) {
         Admin findAdmin = findById(id);
 

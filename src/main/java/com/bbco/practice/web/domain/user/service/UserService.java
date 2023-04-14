@@ -1,5 +1,6 @@
 package com.bbco.practice.web.domain.user.service;
 
+import com.bbco.practice.web.common.annotation.Encrypt;
 import com.bbco.practice.web.common.annotation.Trace;
 import com.bbco.practice.web.domain.user.dto.UserDto;
 import com.bbco.practice.web.domain.user.dto.params.UserInsertParam;
@@ -38,6 +39,7 @@ public class UserService {
      * @param param
      * @return
      */
+    @Encrypt
     @Trace
     public UserDto save(UserInsertParam param) {
 
@@ -68,6 +70,7 @@ public class UserService {
      * @param cond
      * @return
      */
+    @Encrypt
     @Transactional(readOnly = true)
     public List<UserDto> findUserByCondition(UserSearchCond cond) {
         return dslRepository.findUserByCondition(cond);
@@ -98,6 +101,7 @@ public class UserService {
      * @param cond
      * @return
      */
+    @Encrypt
     @Transactional(readOnly = true)
     public Boolean isExist(UserSearchCond cond) {
         Long cnt = dslRepository.findCountByCondition(cond);
