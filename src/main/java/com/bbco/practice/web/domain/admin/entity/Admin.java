@@ -1,6 +1,7 @@
 package com.bbco.practice.web.domain.admin.entity;
 
 import com.bbco.practice.web.common.entity.BaseTimeEntity;
+import com.bbco.practice.web.domain.admin.dto.params.AdminInsertParam;
 import com.bbco.practice.web.domain.admin.dto.params.AdminUpdateParam;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -21,10 +22,10 @@ public class Admin extends BaseTimeEntity {
     private String password;
     private String name;
 
-    public Admin(String adminId, String password, String name) {
-        this.adminId = adminId;
-        this.password = password;
-        this.name = name;
+    public Admin(AdminInsertParam param) {
+        this.adminId = param.getId();
+        this.password = param.getPassword();
+        this.name = param.getName();
     }
 
     public void update(AdminUpdateParam param) {

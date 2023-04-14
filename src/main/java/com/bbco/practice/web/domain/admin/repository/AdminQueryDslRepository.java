@@ -22,17 +22,21 @@ public class AdminQueryDslRepository {
         return queryFactory
                 .selectFrom(admin)
                 .where(
-                        idContains(cond.getId()), nameContains(cond.getName())
+                        idContains(cond.getId()),
+                        passwordEq(cond.getPassword()),
+                        nameContains(cond.getName())
                 )
                 .fetch();
     }
 
-    public Long findCountByCondition(String id, String password) {
+    public Long findCountByCondition(AdminSearchCond cond) {
         return queryFactory
                 .select(admin.id.count())
                 .from(admin)
                 .where(
-                        idContains(id), passwordContains(password)
+                        idContains(cond.getId()),
+                        passwordEq(cond.getPassword()),
+                        nameContains(cond.getName())
                 )
                 .fetchOne();
     }
@@ -41,8 +45,8 @@ public class AdminQueryDslRepository {
         return StringUtils.hasText(id) ? admin.adminId.contains(id) : null;
     }
 
-    private BooleanExpression passwordContains(String password) {
-        return StringUtils.hasText(password) ? admin.password.contains(password) : null;
+    private BooleanExpression passwordEq(String password) {
+        return StringUtils.hasText(password) ? admin.password.eq(password) : null;
     }
 
     private BooleanExpression nameContains(String name) {

@@ -1,6 +1,6 @@
 package com.bbco.practice.web.interceptor;
 
-import com.bbco.practice.web.domain.login.service.LoginService;
+import com.bbco.practice.web.domain.token.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthInterceptor implements HandlerInterceptor {
 
-    private final LoginService loginService;
+    private final TokenService tokenService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -57,6 +57,6 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     private Boolean isNotValid(String authToken) {
         return (!StringUtils.hasText(authToken)  // 토큰이 없는 경우
-                || !loginService.validateToken(authToken)); // 토큰은 존재하지만 유효성을 통과하지 못한 경우
+                || !tokenService.validateToken(authToken)); // 토큰은 존재하지만 유효성을 통과하지 못한 경우
     }
 }

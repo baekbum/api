@@ -6,4 +6,7 @@ public class AnnotationPointcut {
 
     @Pointcut("@annotation(com.bbco.practice.web.common.annotation.Trace)")
     public void runTimeTrace() { }
+
+    @Pointcut("@annotation(com.bbco.practice.web.common.annotation.Encrypt)")
+    public void runTimeEncrypt() { }
 }

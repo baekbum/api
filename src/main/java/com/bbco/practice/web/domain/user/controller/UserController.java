@@ -1,9 +1,12 @@
 package com.bbco.practice.web.domain.user.controller;
 
-import com.bbco.practice.web.domain.user.dto.User;
-import com.bbco.practice.web.domain.user.dto.params.InsertParam;
-import com.bbco.practice.web.domain.user.dto.params.UpdateParam;
-import com.bbco.practice.web.domain.user.dto.resForm.ResponseUserForm;
+import com.bbco.practice.web.domain.user.dto.UserDto;
+import com.bbco.practice.web.domain.user.dto.form.UserListResForm;
+import com.bbco.practice.web.domain.user.dto.form.UserResForm;
+import com.bbco.practice.web.domain.user.dto.params.UserInsertParam;
+import com.bbco.practice.web.domain.user.dto.params.UserSearchCond;
+import com.bbco.practice.web.domain.user.dto.params.UserUpdateParam;
+import com.bbco.practice.web.domain.user.entity.User;
 import com.bbco.practice.web.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RequestMapping("/api/v1")
@@ -21,35 +25,38 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/user/info")
-    public ResponseEntity<ResponseUserForm> insertUser(@Valid @RequestBody InsertParam param) throws Exception {
-        User userInfo = userService.insert(param);
-        ResponseUserForm resForm = new ResponseUserForm(userInfo, "등록되었습니다.");
+    @PostMapping("/user")
+    public ResponseEntity<UserResForm> save(@Valid @RequestBody UserInsertParam param) throws Exception {
+        User content = userService.save(param);
 
-        return new ResponseEntity<>(resForm, HttpStatus.OK);
+        return new ResponseEntity<>(new UserResForm(new UserDto(content), "등록되었습니다."), HttpStatus.OK);
     }
 
-    @GetMapping("/user/info/{userId}")
-    public ResponseEntity<ResponseUserForm> selectUser(@PathVariable("userId") String userId) throws Exception {
-        User user = userService.select(userId);
-        ResponseUserForm resForm = new ResponseUserForm(user, "조회되었습니다.");
+    @GetMapping("/user")
+    public ResponseEntity<UserListResForm> findById(@RequestBody UserSearchCond cond) throws Exception {
+        List<UserDto> content = userService.findUserByCondition(cond);
 
-        return new ResponseEntity<>(resForm, HttpStatus.OK);
+        return new ResponseEntity<>(new UserListResForm(content, content.size(), "조회되었습니다."), HttpStatus.OK);
     }
 
-    @PutMapping("/user/info/{userId}")
-    public ResponseEntity updateUser(@PathVariable("userId") String userId, @RequestBody UpdateParam param) throws Exception {
-        User userInfo = userService.update(userId, param);
-        ResponseUserForm resForm = new ResponseUserForm(userInfo, "수정되었습니다.");
+    @GetMapping("/user/{id}")
+    public ResponseEntity<UserResForm> findById(@PathVariable("id") String id) throws Exception {
+        User content = userService.findById(id);
 
-        return new ResponseEntity<>(resForm, HttpStatus.OK);
+        return new ResponseEntity<>(new UserResForm(new UserDto(content), "조회되었습니다."), HttpStatus.OK);
     }
 
-    @DeleteMapping("/user/info/{userId}")
-    public ResponseEntity deleteUser(@PathVariable("userId") String userId) throws Exception {
-        User userInfo = userService.delete(userId);
-        ResponseUserForm resForm = new ResponseUserForm(userInfo, "삭제되었습니다.");
+    @PutMapping("/user/{id}")
+    public ResponseEntity<UserResForm> update(@PathVariable("id") String id, @RequestBody UserUpdateParam param) throws Exception {
+        User content = userService.update(id, param);
 
-        return new ResponseEntity<>(resForm, HttpStatus.OK);
+        return new ResponseEntity<>(new UserResForm(new UserDto(content), "수정되었습니다."), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<UserResForm> delete(@PathVariable("id") String id) throws Exception {
+        User content = userService.findById(id);
+
+        return new ResponseEntity<>(new UserResForm(new UserDto(content), "삭제되었습니다."), HttpStatus.OK);
     }
 }

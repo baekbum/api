@@ -1,5 +1,6 @@
 package com.bbco.practice.web.domain.admin.service;
 
+import com.bbco.practice.web.common.annotation.Encrypt;
 import com.bbco.practice.web.domain.admin.dto.AdminDto;
 import com.bbco.practice.web.domain.admin.dto.params.AdminInsertParam;
 import com.bbco.practice.web.domain.admin.dto.params.AdminSearchCond;
@@ -12,9 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -29,20 +28,12 @@ public class AdminService {
     private String isExist = "이미 존재하는 관리자 입니다.";
     private String isNotExist = "존재하는 않는 관리자 입니다.";
 
-    /**
-     * 관리자 등록 로직
-     * 이미 해당 ID의 관리자가 존재하면 오류 반환 없다면 등록
-     * @param param
-     * @return
-     */
+    @Encrypt
     public Admin save(AdminInsertParam param) {
 
-        if (isExist(param.getId(), null)) {
-            log.info(isExist);
-            return null;
-        }
+        if (isExist(new AdminSearchCond(param.getId()))) throw new IllegalArgumentException(isExist);
 
-        Admin newAdmin = new Admin(param.getId(), param.getPassword(), param.getName());
+        Admin newAdmin = new Admin(param);
 
         repository.save(newAdmin);
 
@@ -50,50 +41,31 @@ public class AdminService {
         return newAdmin;
     }
 
-    /**
-     * 관리자 조건 조회
-     * @param cond
-     * @return
-     */
+    @Encrypt
     @Transactional(readOnly = true)
     public List<Admin> findAdminByCondition(AdminSearchCond cond) {
         return dslRepository.findAdminByCondition(cond);
     }
 
-    /**
-     * 관리자 한 건 조회 로직
-     * 관리자 유효성 검증 및 일치하면 관리자 정보 반환
-     * @param id
-     * @return
-     */
     @Transactional(readOnly = true)
-    public Admin findById(String id) {
+    public Admin findById(String adminId) {
+        Admin findAdmin = repository.findByAdminId(adminId)
+                .orElseThrow(() -> new IllegalArgumentException(isNotExist));
 
-        Optional<Admin> findAdmin = repository.findByAdminId(id);
 
-        if (findAdmin.isEmpty()) {
-            log.info(isNotExist);
-            return null;
-        }
-
-        log.info("[조회된 관리자 ID] : {}", findAdmin.get().getAdminId());
-        return findAdmin.get();
+        log.info("[조회된 관리자 ID] : {}", findAdmin.getAdminId());
+        return findAdmin;
     }
 
-    /**
-     * 조건(id, password)에 일치하는 정보가 있는 확인 로직
-     * @param id
-     * @param password
-     * @return
-     */
+    @Encrypt
     @Transactional(readOnly = true)
-    public Boolean isExist(String id, String password) {
-        Long cnt = dslRepository.findCountByCondition(id, password);
+    public Boolean isExist(AdminSearchCond cond) {
+        Long cnt = dslRepository.findCountByCondition(cond);
 
         return (cnt > 0) ? true : false;
     }
 
-
+    @Encrypt
     public Admin update(String id, AdminUpdateParam param) {
         Admin findAdmin = findById(id);
 
@@ -102,11 +74,6 @@ public class AdminService {
         return findAdmin;
     }
 
-    /**
-     * 삭제 로직
-     * @param admin
-     * @return
-     */
     public Admin delete(Admin admin) {
         repository.delete(admin);
 
@@ -114,10 +81,8 @@ public class AdminService {
         return admin;
     }
 
-    public List<AdminDto> adminToDto(Admin admin) {
-        List<AdminDto> list = new ArrayList();
-        list.add(new AdminDto(admin));
-        return list;
+    public AdminDto adminToDto(Admin admin) {
+        return new AdminDto(admin);
     }
 
     public List<AdminDto> adminToDto(List<Admin> list) {

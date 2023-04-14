@@ -1,8 +1,8 @@
 package com.bbco.practice.web.utils;
 
-import com.bbco.practice.web.domain.admin.entity.Admin;
+import com.bbco.practice.web.domain.admin.dto.params.AdminSearchCond;
 import com.bbco.practice.web.domain.admin.service.AdminService;
-import com.bbco.practice.web.domain.login.dto.params.LoginParam;
+import com.bbco.practice.web.domain.token.dto.params.TokenParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -24,9 +24,9 @@ public class TokenProvider {
      * @param param
      * @return
      */
-    public String createStr(LoginParam param) {
+    public String createStr(TokenParam param) {
 
-        Boolean isExist = service.isExist(param.getId(), param.getPassword());
+        Boolean isExist = service.isExist(new AdminSearchCond(param.getId(), param.getPassword()));
 
         // 해당 관리자 정보가 존재하지 않음
         if (!isExist) {
@@ -108,6 +108,6 @@ public class TokenProvider {
             return false;
         }
 
-        return service.isExist(id, pass) ? true : false;
+        return service.isExist(new AdminSearchCond(id, pass)) ? true : false;
     }
 }

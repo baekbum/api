@@ -1,16 +1,16 @@
 package com.bbco.practice.web.domain.user.repository;
 
-import com.bbco.practice.web.domain.user.dto.User;
+import com.bbco.practice.web.domain.user.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
-public interface UserRepository {
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    void save(User user);
-
-    User find(String id);
-
-    void update(User user);
-
-    void delete(User user);
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.rank r WHERE u.userId = :userId")
+    Optional<User> findByUserId(@Param("userId") String userId);
 }
