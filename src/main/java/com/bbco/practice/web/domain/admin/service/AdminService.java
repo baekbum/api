@@ -50,7 +50,7 @@ public class AdminService {
     @Transactional(readOnly = true)
     public Admin findById(String adminId) {
         Admin findAdmin = repository.findByAdminId(adminId)
-                .orElseThrow(() -> new IllegalArgumentException(isNotExist));
+                .orElseThrow(() -> new NullPointerException(isNotExist));
 
 
         log.info("[조회된 관리자 ID] : {}", findAdmin.getAdminId());
@@ -74,11 +74,12 @@ public class AdminService {
         return findAdmin;
     }
 
-    public Admin delete(Admin admin) {
-        repository.delete(admin);
+    public Admin delete(String id) {
+        Admin findAdmin = findById(id);
+        repository.delete(findAdmin);
 
-        log.info("[삭제된 관리자 ID] : {}", admin.getAdminId());
-        return admin;
+        log.info("[삭제된 관리자 ID] : {}", findAdmin.getAdminId());
+        return findAdmin;
     }
 
     public AdminDto adminToDto(Admin admin) {

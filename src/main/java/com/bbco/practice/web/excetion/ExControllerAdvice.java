@@ -11,6 +11,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExControllerAdvice {
 
     @ExceptionHandler
+    public ResponseEntity<ErrorResult> nullPoint(NullPointerException e) {
+        log.info("[nullPoint] : [{}]", e.getMessage());
+        ErrorResult errorResult = new ErrorResult("null point", e.getMessage());
+        return new ResponseEntity<>(errorResult, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
     public ResponseEntity<ErrorResult> badRequest(IllegalArgumentException e) {
         log.info("[badRequest] : [{}]", e.getMessage());
         ErrorResult errorResult = new ErrorResult("bad parameter", e.getMessage());

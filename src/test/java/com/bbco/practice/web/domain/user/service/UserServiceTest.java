@@ -19,12 +19,11 @@ import javax.persistence.PersistenceContext;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.as;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-@Rollback(value = false)
+@Rollback
 class UserServiceTest {
 
     @PersistenceContext
@@ -37,6 +36,10 @@ class UserServiceTest {
     private final String DEFAULT_USER_PASSWORD = "qwe123";
     private final String DEFAULT_USER_NAME = "유저1";
     private final Long DEFAULT_USER_RANK = 1L;
+
+    private String isExist = "이미 존재하는 사용자 입니다.";
+    private String isNotExist = "존재하는 않는 사용자 입니다.";
+    private String isNotRank = "직급이 존재하지 않습니다.";
 
     @BeforeEach
     void init() {
@@ -62,20 +65,45 @@ class UserServiceTest {
         UserInsertParam insertParam = new UserInsertParam("user2", "qwe123", "유저2", 2L, "010-8888-8888", "서울시", "xx로", "87873");
 
         // when
-        User result = userService.save(insertParam);
+        User savedUser = userService.save(insertParam);
 
         // then
-        assertThat(insertParam.getId()).isEqualTo(result.getId());
+        assertThat(insertParam.getId()).isEqualTo(savedUser.getUserId());
     }
 
     @Test
-    @DisplayName("유저 한건 조회")
+    @DisplayName("유저 중복 저장")
+    void saveFail() throws Exception {
+        // given
+        UserInsertParam insertParam = new UserInsertParam(DEFAULT_USER_ID, DEFAULT_USER_PASSWORD, DEFAULT_USER_NAME, DEFAULT_USER_RANK, "010-7777-7777", "서울시", "xx로", "87873");
+
+        // when && then
+        assertThatIllegalArgumentException().isThrownBy(() -> {
+                userService.save(insertParam);
+            })
+            .withMessage(isExist);
+    }
+
+    @Test
+    @DisplayName("유저 한 건 조회")
     void findOne() throws Exception {
         // given && when
         User findUser = userService.findById(DEFAULT_USER_ID);
 
         // then
         assertThat(findUser.getName()).isEqualTo(DEFAULT_USER_NAME);
+    }
+
+    @Test
+    @DisplayName("유저 조회 실패 (해당 ID 존재하지 않음)")
+    void findOneFail() throws Exception {
+        // given
+        String id = "notExistUser";
+        // when && then
+        assertThatNullPointerException().isThrownBy(() -> {
+            userService.findById(id);
+        })
+        .withMessage(isNotExist);
     }
 
     @Test

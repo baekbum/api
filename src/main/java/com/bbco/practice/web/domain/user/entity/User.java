@@ -18,15 +18,23 @@ public class User extends BaseTimeEntity {
 
     @Id @GeneratedValue
     private Long id;
+
+    @Column(unique = true, nullable = false, length = 30)
     private String userId;
+
+    @Column(nullable = false, length = 30)
     private String password;
+
+    @Column(nullable = false, length = 15)
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userRank_id")
     private UserRank rank;
 
+    @Column(nullable = false, length = 13)
     private String tel;
+
     @Embedded
     private Address address;
     //private String team; // 추후에 팀 엔티티로 교체

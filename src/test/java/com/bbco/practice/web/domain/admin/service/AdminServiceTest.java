@@ -16,7 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -32,6 +32,9 @@ class AdminServiceTest {
     private final String DEFAULT_ADMIN_ID = "admin";
     private final String DEFAULT_ADMIN_PASSWORD = "qwe123";
     private final String DEFAULT_ADMIN_NAME = "관리자";
+
+    private String isExist = "이미 존재하는 관리자 입니다.";
+    private String isNotExist = "존재하는 않는 관리자 입니다.";
 
 
     @BeforeEach
@@ -54,9 +57,21 @@ class AdminServiceTest {
         service.save(newAdminParam);
 
         // then
-        Admin findAdmin = service.findById(newAdminParam.getId());
+        Admin savedAdmin = service.findById(newAdminParam.getId());
 
-        assertThat(findAdmin.getAdminId()).isEqualTo(newAdminParam.getId());
+        assertThat(savedAdmin.getAdminId()).isEqualTo(newAdminParam.getId());
+    }
+
+    @Test
+    @DisplayName("관리자 중복 저장")
+    void saveFail() throws Exception {
+        // given
+        AdminInsertParam newAdminParam = new AdminInsertParam(DEFAULT_ADMIN_ID, DEFAULT_ADMIN_PASSWORD, DEFAULT_ADMIN_NAME);
+        // when && then
+        assertThatIllegalArgumentException().isThrownBy(() -> {
+                service.save(newAdminParam);
+            })
+            .withMessage(isExist);
     }
 
     /**
@@ -70,6 +85,18 @@ class AdminServiceTest {
         Admin findAdmin = service.findById(DEFAULT_ADMIN_ID);
 
         assertThat(findAdmin.getName()).isEqualTo(DEFAULT_ADMIN_NAME);
+    }
+
+    @Test
+    @DisplayName("사용자 조회 실패 (해당 ID 존재하지 않음)")
+    void findOneFail() throws Exception {
+        // given
+        String id = "notExistAdmin";
+        // when && then
+        assertThatNullPointerException().isThrownBy(() -> {
+                service.findById(id);
+            })
+            .withMessage(isNotExist);
     }
 
     /**
@@ -156,8 +183,7 @@ class AdminServiceTest {
         service.save(adminInsertParam);
 
         // when
-        Admin findAdmin = service.findById("bb");
-        service.delete(findAdmin);
+        service.delete("bb");
 
         // then
         Boolean isExist = service.isExist(new AdminSearchCond("bb"));

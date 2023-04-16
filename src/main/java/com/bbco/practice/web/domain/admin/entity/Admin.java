@@ -18,8 +18,14 @@ public class Admin extends BaseTimeEntity {
 
     @Id @GeneratedValue
     private Long id;
+
+    @Column(unique = true, nullable = false, length = 30)
     private String adminId;
+
+    @Column(nullable = false, length = 30)
     private String password;
+
+    @Column(nullable = false, length = 15)
     private String name;
 
     public Admin(AdminInsertParam param) {
@@ -31,13 +37,5 @@ public class Admin extends BaseTimeEntity {
     public void update(AdminUpdateParam param) {
         if (StringUtils.hasText(param.getPassword())) this.password = param.getPassword();
         if (StringUtils.hasText(param.getName())) this.name = param.getName();
-    }
-
-    public void changePassword(String newPassword) {
-        this.password = newPassword;
-    }
-
-    public void changeName(String newName) {
-        this.name = newName;
     }
 }
