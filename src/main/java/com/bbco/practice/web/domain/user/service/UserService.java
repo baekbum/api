@@ -72,7 +72,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public User findById(String userId) {
         User findUser = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException(isNotExist));
+                .orElseThrow(() -> new NullPointerException(isNotExist));
 
         log.info("[조회된 사용자 ID] : {}", findUser.getUserId());
         return findUser;
@@ -82,7 +82,7 @@ public class UserService {
     @Encrypt
     public User update(String id, UserUpdateParam param) {
         User findUser = userRepository.findByUserId(id)
-                .orElseThrow(() -> new IllegalArgumentException(isNotExist));
+                .orElseThrow(() -> new NullPointerException(isNotExist));
 
         findUser.update(param);
 
@@ -99,7 +99,7 @@ public class UserService {
     @Trace
     public User delete(String id) {
         User findUser = userRepository.findByUserId(id)
-                .orElseThrow(() -> new IllegalArgumentException(isNotExist));
+                .orElseThrow(() -> new NullPointerException(isNotExist));
 
         userRepository.delete(findUser);
 
@@ -126,6 +126,6 @@ public class UserService {
      */
     private UserRank getRank(Long id) {
         return rankRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(isNotRank));
+                .orElseThrow(() -> new NullPointerException(isNotRank));
     }
 }

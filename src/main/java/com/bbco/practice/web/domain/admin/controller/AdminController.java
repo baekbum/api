@@ -52,7 +52,7 @@ public class AdminController {
 
     @DeleteMapping("/admin/{id}")
     public ResponseEntity<AdminResForm> delete(@PathVariable("id") String id) {
-        AdminDto content = service.adminToDto(service.delete(service.findById(id)));
+        AdminDto content = service.adminToDto(service.delete(id));
 
         return new ResponseEntity<>(new AdminResForm(content, "삭제되었습니다.."), HttpStatus.OK);
     }

@@ -51,3 +51,10 @@
 - 사용자 CRUD 로직 수정 및 테스트 코드 추가
 
 - 비밀번호 암호화 로직 추가 ( AOP로 적용)
+
+# 2023 04 16
+- Admin, User 엔티티 컬럼 제약 조건 수정
+
+- ExControllerAdvice에 NullPointerException 추가
+
+- Admin, User 중복 유저 및 조회 불가 오류 테스트 케이스 추가
