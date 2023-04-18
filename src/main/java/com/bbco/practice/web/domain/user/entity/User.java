@@ -22,7 +22,7 @@ public class User extends BaseTimeEntity {
     @Column(unique = true, nullable = false, length = 30)
     private String userId;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 100)
     private String password;
 
     @Column(nullable = false, length = 15)
@@ -48,12 +48,12 @@ public class User extends BaseTimeEntity {
     }
 
     public void update(UserUpdateParam param) {
-        if (StringUtils.hasText(param.getPassword())) password = param.getPassword();
-        if (StringUtils.hasText(param.getName())) name = param.getName();
-        if (StringUtils.hasText(param.getTel())) tel = param.getTel();
-        if (StringUtils.hasText(param.getStreet())) address.setStreet(param.getStreet());
-        if (StringUtils.hasText(param.getCity())) address.setCity(param.getCity());
-        if (StringUtils.hasText(param.getZipcode())) address.setZipcode(param.getZipcode());
+        if (StringUtils.hasText(param.getPassword())) this.password = param.getPassword();
+        if (StringUtils.hasText(param.getName())) this.name = param.getName();
+        if (StringUtils.hasText(param.getTel())) this.tel = param.getTel();
+        if (StringUtils.hasText(param.getStreet())) this.address.setStreet(param.getStreet());
+        if (StringUtils.hasText(param.getCity())) this.address.setCity(param.getCity());
+        if (StringUtils.hasText(param.getZipcode())) this.address.setZipcode(param.getZipcode());
     }
 
     public void setRank(UserRank rank) {

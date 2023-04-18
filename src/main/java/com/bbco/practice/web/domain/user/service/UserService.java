@@ -81,8 +81,7 @@ public class UserService {
     @Trace
     @Encrypt
     public User update(String id, UserUpdateParam param) {
-        User findUser = userRepository.findByUserId(id)
-                .orElseThrow(() -> new NullPointerException(isNotExist));
+        User findUser = findById(id);
 
         findUser.update(param);
 

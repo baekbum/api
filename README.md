@@ -58,3 +58,13 @@
 - ExControllerAdvice에 NullPointerException 추가
 
 - Admin, User 중복 유저 및 조회 불가 오류 테스트 케이스 추가
+
+# 2023 04 17
+- Team 엔티티 추가
+
+- Team 저장, 조회 로직 및 테스트 코드 추가
+
+# 2023 04 18
+- Team 수정, 삭제 로직 및 테스트 코드 추가
+
+- User, Admin 비밀번호 필드 length 30에서 100으로 수정 ( 패스워드 암호화 때문에 )
