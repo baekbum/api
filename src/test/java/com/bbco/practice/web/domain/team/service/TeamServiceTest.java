@@ -42,6 +42,7 @@ class TeamServiceTest {
         Team C = new Team(3000L, "영업", A);
         Team D = new Team(4000L, "기술지원", A);
         Team E = new Team(5000L, "개발", A);
+        Team Z = new Team(9999L, "기타", null);
 
         em.persist(A);
         em.persist(B);
@@ -49,7 +50,7 @@ class TeamServiceTest {
         em.persist(C);
         em.persist(D);
         em.persist(E);
-
+        em.persist(Z);
 
         em.flush();
         em.clear();

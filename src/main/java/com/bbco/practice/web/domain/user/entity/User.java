@@ -1,6 +1,7 @@
 package com.bbco.practice.web.domain.user.entity;
 
 import com.bbco.practice.web.common.entity.BaseTimeEntity;
+import com.bbco.practice.web.domain.team.entity.Team;
 import com.bbco.practice.web.domain.user.dto.params.UserInsertParam;
 import com.bbco.practice.web.domain.user.dto.params.UserUpdateParam;
 import lombok.AccessLevel;
@@ -37,7 +38,10 @@ public class User extends BaseTimeEntity {
 
     @Embedded
     private Address address;
-    //private String team; // 추후에 팀 엔티티로 교체
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
+    private Team team;
 
     public User(UserInsertParam param) {
         this.userId = param.getId();
@@ -58,5 +62,9 @@ public class User extends BaseTimeEntity {
 
     public void setRank(UserRank rank) {
         this.rank = rank;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 }
