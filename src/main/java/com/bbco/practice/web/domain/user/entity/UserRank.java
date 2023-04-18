@@ -44,4 +44,8 @@ public class UserRank {
         this.name = name;
     }
 
+    public void addUser(User user) {
+        this.users.add(user);
+    }
+
 }

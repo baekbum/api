@@ -3,9 +3,6 @@ package com.bbco.practice.web.domain.user.repository;
 import com.bbco.practice.web.domain.user.dto.QUserDto;
 import com.bbco.practice.web.domain.user.dto.UserDto;
 import com.bbco.practice.web.domain.user.dto.params.UserSearchCond;
-import com.bbco.practice.web.domain.user.entity.QUser;
-import com.bbco.practice.web.domain.user.entity.QUserRank;
-import com.bbco.practice.web.domain.user.entity.User;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +11,8 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 
-import static com.bbco.practice.web.domain.user.entity.QUser.*;
-import static com.bbco.practice.web.domain.user.entity.QUserRank.*;
+import static com.bbco.practice.web.domain.user.entity.QUser.user;
+import static com.bbco.practice.web.domain.user.entity.QUserRank.userRank;
 
 @Repository
 @RequiredArgsConstructor
@@ -39,7 +36,8 @@ public class UserQueryDslRepository {
                         idContains(cond.getId()),
                         nameContains(cond.getName()),
                         rankEq(cond.getRankId()),
-                        telContains(cond.getTel())
+                        telContains(cond.getTel()),
+                        teamEq(cond.getTeamId())
                 )
                 .fetch();
     }
@@ -53,7 +51,8 @@ public class UserQueryDslRepository {
                         idContains(cond.getId()),
                         nameContains(cond.getName()),
                         rankEq(cond.getRankId()),
-                        telContains(cond.getTel())
+                        telContains(cond.getTel()),
+                        teamEq(cond.getTeamId())
                 )
                 .fetchOne();
     }
@@ -72,5 +71,9 @@ public class UserQueryDslRepository {
 
     private BooleanExpression telContains(String tel) {
         return StringUtils.hasText(tel) ? user.tel.contains(tel) : null;
+    }
+
+    private BooleanExpression teamEq(Long teamId) {
+        return (teamId != null) ? user.team.id.eq(teamId) : null;
     }
 }

@@ -17,9 +17,8 @@ public class UserUpdateParam {
     private String name;
     private Long rankId;
     private String tel;
-
     private String city;
     private String street;
     private String zipcode;
-    //private String team; // 추후에 팀 엔티티로 교체
+    private Long teamId;
 }

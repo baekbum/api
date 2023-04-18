@@ -1,5 +1,6 @@
 package com.bbco.practice.web.domain.user.service;
 
+import com.bbco.practice.web.domain.team.entity.Team;
 import com.bbco.practice.web.domain.user.dto.UserDto;
 import com.bbco.practice.web.domain.user.dto.params.UserInsertParam;
 import com.bbco.practice.web.domain.user.dto.params.UserSearchCond;
@@ -36,10 +37,10 @@ class UserServiceTest {
     private final String DEFAULT_USER_PASSWORD = "qwe123";
     private final String DEFAULT_USER_NAME = "유저1";
     private final Long DEFAULT_USER_RANK = 1L;
+    private final Long DEFAULT_USER_TEAM = 9999L;
 
     private String isExist = "이미 존재하는 사용자 입니다.";
     private String isNotExist = "존재하는 않는 사용자 입니다.";
-    private String isNotRank = "직급이 존재하지 않습니다.";
 
     @BeforeEach
     void init() {
@@ -51,10 +52,26 @@ class UserServiceTest {
         em.persist(new UserRank(6L, "이사"));
         em.persist(new UserRank(7L, "사장"));
 
+        Team A = new Team(1000L, "본사", null);
+        Team B = new Team(2000L, "경영지원", A);
+        Team B1 = new Team(2001L, "경영지원 1팀", B);
+        Team C = new Team(3000L, "영업", A);
+        Team D = new Team(4000L, "기술지원", A);
+        Team E = new Team(5000L, "개발", A);
+        Team Z = new Team(9999L, "기타", null);
+
+        em.persist(A);
+        em.persist(B);
+        em.persist(B1);
+        em.persist(C);
+        em.persist(D);
+        em.persist(E);
+        em.persist(Z);
+
         em.flush();
         em.clear();
 
-        UserInsertParam insertParam = new UserInsertParam(DEFAULT_USER_ID, DEFAULT_USER_PASSWORD, DEFAULT_USER_NAME, DEFAULT_USER_RANK, "010-7777-7777", "서울시", "xx로", "87873");
+        UserInsertParam insertParam = new UserInsertParam(DEFAULT_USER_ID, DEFAULT_USER_PASSWORD, DEFAULT_USER_NAME, DEFAULT_USER_RANK, "010-7777-7777", "서울시", "xx로", "87873", DEFAULT_USER_TEAM);
         userService.save(insertParam);
     }
 
@@ -62,7 +79,7 @@ class UserServiceTest {
     @DisplayName("유저 저장")
     void save() throws Exception {
         // given
-        UserInsertParam insertParam = new UserInsertParam("user2", "qwe123", "유저2", 2L, "010-8888-8888", "서울시", "xx로", "87873");
+        UserInsertParam insertParam = new UserInsertParam("user2", "qwe123", "유저2", 2L, "010-8888-8888", "서울시", "xx로", "87873", 2001L);
 
         // when
         User savedUser = userService.save(insertParam);
@@ -75,7 +92,7 @@ class UserServiceTest {
     @DisplayName("유저 중복 저장")
     void saveFail() throws Exception {
         // given
-        UserInsertParam insertParam = new UserInsertParam(DEFAULT_USER_ID, DEFAULT_USER_PASSWORD, DEFAULT_USER_NAME, DEFAULT_USER_RANK, "010-7777-7777", "서울시", "xx로", "87873");
+        UserInsertParam insertParam = new UserInsertParam(DEFAULT_USER_ID, DEFAULT_USER_PASSWORD, DEFAULT_USER_NAME, DEFAULT_USER_RANK, "010-7777-7777", "서울시", "xx로", "87873", DEFAULT_USER_TEAM);
 
         // when && then
         assertThatIllegalArgumentException().isThrownBy(() -> {
@@ -92,6 +109,7 @@ class UserServiceTest {
 
         // then
         assertThat(findUser.getName()).isEqualTo(DEFAULT_USER_NAME);
+        assertThat(findUser.getTeam().getId()).isEqualTo(DEFAULT_USER_TEAM);
     }
 
     @Test
@@ -110,10 +128,10 @@ class UserServiceTest {
     @DisplayName("유저 조건 조회")
     void findByCond() throws Exception {
         // given
-        UserInsertParam insertParam = new UserInsertParam("user2", "qwe123", "유저2", 2L, "010-8888-8888", "서울시", "xx로", "87873");
+        UserInsertParam insertParam = new UserInsertParam("user2", "qwe123", "유저2", 2L, "010-8888-8888", "서울시", "xx로", "87873", 2001L);
         User result = userService.save(insertParam);
 
-        UserSearchCond cond = new UserSearchCond(new UserInsertParam(null, null, "유저", null, null, null, null, null));
+        UserSearchCond cond = new UserSearchCond(new UserInsertParam(null, null, "유저", null, null, null, null, null, null));
         // when
         List<UserDto> findUsers = userService.findUserByCondition(cond);
 
@@ -125,17 +143,18 @@ class UserServiceTest {
     @DisplayName("유저 수정")
     void update() throws Exception {
         // given
-        UserInsertParam insertParam = new UserInsertParam("user2", "qwe123", "유저2", 2L, "010-8888-8888", "서울시", "xx로", "87873");
+        UserInsertParam insertParam = new UserInsertParam("user2", "qwe123", "유저2", 2L, "010-8888-8888", "서울시", "xx로", "87873", 9999L);
         userService.save(insertParam);
 
         String changeName = "수정된 유저";
         // when
-        userService.update("user2", new UserUpdateParam(null, changeName, 3L, null, null, null, null));
+        userService.update("user2", new UserUpdateParam(null, changeName, 3L, null, null, null, null, 2001L));
 
         // then
         User findUser = userService.findById("user2");
 
         assertThat(findUser.getName()).isEqualTo(changeName);
+        assertThat(findUser.getTeam().getId()).isEqualTo(2001L);
     }
 
     @Test
@@ -143,7 +162,7 @@ class UserServiceTest {
     void delete() throws Exception {
         // given
         String userId = "user2";
-        UserInsertParam insertParam = new UserInsertParam(userId, "qwe123", "유저2", 2L, "010-8888-8888", "서울시", "xx로", "87873");
+        UserInsertParam insertParam = new UserInsertParam(userId, "qwe123", "유저2", 2L, "010-8888-8888", "서울시", "xx로", "87873", 2001L);
         userService.save(insertParam);
 
         // when

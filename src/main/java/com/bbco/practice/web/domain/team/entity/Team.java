@@ -32,8 +32,8 @@ public class Team extends BaseTimeEntity {
     @OneToMany(mappedBy = "upperTeam")
     private List<Team> lowerTeams = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "team")
-//    private List<User> users = new ArrayList<>();
+    @OneToMany(mappedBy = "team")
+    private List<User> users = new ArrayList<>();
 
     public Team(TeamInsertParam param) {
         this.id = param.getId();
@@ -58,7 +58,7 @@ public class Team extends BaseTimeEntity {
         this.lowerTeams.add(lowerTeam);
     }
 
-//    public void addUser(User user) {
-//        users.add(user);
-//    }
+    public void addUser(User user) {
+        users.add(user);
+    }
 }

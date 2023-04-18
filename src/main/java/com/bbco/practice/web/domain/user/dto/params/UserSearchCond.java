@@ -13,7 +13,7 @@ public class UserSearchCond {
     private String name;
     private Long rankId;
     private String tel;
-    //private int team;
+    private Long teamId;
 
     public UserSearchCond(String id) {
         this.id = id;
@@ -29,5 +29,6 @@ public class UserSearchCond {
         this.password = StringUtils.hasText(param.getPassword()) ? param.getPassword() : null;
         this.name = StringUtils.hasText(param.getName()) ? param.getName() : null;
         this.rankId = param.getRankId() != null ? param.getRankId() : null;
+        this.teamId = param.getTeamId() != null ? param.getTeamId() : null;
     }
 }
