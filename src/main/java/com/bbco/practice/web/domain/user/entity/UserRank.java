@@ -4,9 +4,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Getter
@@ -28,9 +28,6 @@ public class UserRank {
     private Long id;
     private String name;
 
-    @OneToMany(mappedBy = "rank")
-    private List<User> users = new ArrayList<>();
-
     public UserRank(Long id, String name) {
         this.id = id;
         this.name = name;
@@ -43,9 +40,4 @@ public class UserRank {
     public void changeName(String name) {
         this.name = name;
     }
-
-    public void addUser(User user) {
-        this.users.add(user);
-    }
-
 }

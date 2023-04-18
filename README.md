@@ -70,3 +70,5 @@
 - User, Admin 비밀번호 필드 length 30에서 100으로 수정 ( 패스워드 암호화 때문에 )
 
 - Team, User 엔티티 연관 관계 설정
+
+- User, UserRank 엔티티 단방향 연관 관계로 변경

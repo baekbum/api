@@ -2,7 +2,6 @@ package com.bbco.practice.web.domain.user.service;
 
 import com.bbco.practice.web.common.annotation.Encrypt;
 import com.bbco.practice.web.common.annotation.Trace;
-import com.bbco.practice.web.domain.team.dto.params.TeamSearchCond;
 import com.bbco.practice.web.domain.team.entity.Team;
 import com.bbco.practice.web.domain.team.service.TeamService;
 import com.bbco.practice.web.domain.user.dto.UserDto;
@@ -55,7 +54,6 @@ public class UserService {
         Long rankId = (param.getRankId() == null) ? 1L : param.getRankId();
         UserRank findRank = getRank(rankId);
         user.setRank(findRank);
-        findRank.addUser(user);
 
         // 3
         Long teamId = param.getTeamId() == null ? 9999L : param.getTeamId();
