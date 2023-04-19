@@ -27,7 +27,7 @@ public class TokenController {
      * @return
      * @throws Exception
      */
-    @PostMapping("/login")
+    @PostMapping("/token")
     public ResponseEntity<ResponseTokenForm> login(@RequestBody TokenParam param, HttpServletResponse response) throws Exception {
         log.info("[--토큰 생성 로직 시작--]");
 
