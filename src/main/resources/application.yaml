@@ -15,6 +15,15 @@ spring:
     properties:
       show-sql: true
       format_sql: true
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+#config:
+#  app:
+#    duration: 10000
 
 logging:
   level:
