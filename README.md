@@ -72,3 +72,8 @@
 - Team, User 엔티티 연관 관계 설정
 
 - User, UserRank 엔티티 단방향 연관 관계로 변경
+
+# 2023 04 19
+- rabbitmq 사용을 위한 의존성 추가
+
+- rabbitmq 초기 코드 작성

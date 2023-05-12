@@ -17,6 +17,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(authInterceptor)
                 .order(1)
                 .addPathPatterns("/api/v1/**")
-                .excludePathPatterns("/api/v1/login");
+                .excludePathPatterns("/api/v1/token");
     }
 }
